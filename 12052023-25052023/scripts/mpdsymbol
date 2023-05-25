@@ -1,7 +1,0 @@
-#!/bin/sh
-if mpc | grep -q playing; then
-    # If music is playing, display the play symbol
-    printf "\u25B6\n"
-else
-    printf "\u23F8\n"
-fi

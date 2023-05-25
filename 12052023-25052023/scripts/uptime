@@ -1,4 +1,0 @@
-#!/bin/sh
-
-uptime | awk -F'( |,|:)+' '{print $6 ":" $7}'
-
