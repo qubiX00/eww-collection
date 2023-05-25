@@ -1,0 +1,244 @@
+(defwidget bar []
+  (box :orientation "h" :space-evenly true 
+    (box :halign "start" :space-evenly false
+      (launcher)
+      (weather)
+      (workspaces))
+    (box :halign "end" :space-evenly false
+      (cpu)
+      (ram)
+      (music)
+      (clocky)
+      (powerbar))))
+
+  (defwidget cpu []
+  (eventbox :onclick "eww open-many close-bg monitor-widget"
+    (box :class "cpuusage" :orientation "h" :space-evenly false :halign "end"
+      (label :text "${round(EWW_CPU.avg, 0)}%")
+  )))
+
+  (defwidget ram []
+  (eventbox :onclick "eww open-many close-bg monitor-widget"
+    (box :class "ramusage" :orientation "h" :space-evenly false :halign "end"
+      (label :text "${ramusage} MB")
+  )))
+
+  (defwidget powerbar []
+    (box :class "powerbar" :orientation "h" :space-evenly false :halign "end"
+    (button :onclick "eww open-many close-bg powermenu" "襤")
+  ))
+
+  (defwidget weather []
+  (eventbox :onclick "eww open-many close-bg weather-widget"
+    (box :class "weather" :orientation "h" :space-evenly false :halign "start"
+      (label :text "${weather}")
+  )))
+
+  (defwidget clocky []
+    (eventbox :onclick "eww open calendare"
+      (box :class "clocky" :orientation "h" :space-evenly false :halign "end"
+         (label :text "${time}")
+  )))
+
+  (defwidget workspaces []
+    (box :class "workspaces"
+         :orientation "h"
+         :space-evenly true
+         :halign "start"
+         :spacing 4
+      (button :onclick "wmctrl -s 0" 1)
+      (button :onclick "wmctrl -s 1" 2)
+      (button :onclick "wmctrl -s 2" 3)
+      (button :onclick "wmctrl -s 3" 4)
+      (button :onclick "wmctrl -s 4" 5)
+      (button :onclick "wmctrl -s 5" 6)
+      (button :onclick "wmctrl -s 6" 7)
+      (button :onclick "wmctrl -s 7" 8)
+      (button :onclick "wmctrl -s 8" 9)
+      (button :onclick "wmctrl -s 9" 10)))
+
+  (defwidget launcher [] 
+    (box :class "launcher" :orientation "h" :halign "start"
+      (button :onclick "eww open-many close-bg widget" "⏺")
+  ))
+
+(defwidget music []
+  (box :class "music"
+       :orientation "h"
+       :space-evenly false
+       :halign "center"
+       :spacing 5
+       (button :onclick "mpc prev" "玲")
+       (button :onclick "mpc toggle" "")
+       (button :onclick "mpc next" "怜")))
+
+(defwindow powermenu
+  :monitor 0
+  :geometry (geometry   :x "8px"
+                        :y "40px"
+                        :width "1px"
+                        :height "1px"
+                        :wm-ignore false
+                        :hexpand false
+                        :vexpand false
+                        :anchor "top right")
+  (powermenu))
+
+(defwidget powermenu []
+      (box :orientation "v" :class "powermenu" :halign "center" :valign "start" :spacing 8 :space-evenly false 
+         (button :onclick "bspc quit" "")
+         (button :onclick "systemctl suspend" "")
+         (button :onclick "systemctl reboot" "")
+         (button :onclick "systemctl poweroff" "")))
+
+
+(defwindow widget
+  :monitor 0
+  :geometry (geometry   :x "5px"
+                        :y "40px"
+                        :width "275px"
+                        :height "242px"
+                        :wm-ignore false
+                        :hexpand false
+                        :vexpand false
+                        :anchor "top left")
+  (widget))
+
+(defwidget widget []
+(box :space-evenly false :orientation "v"
+  (box :orientation "v" :space-evenly false :halign "center" :valign "start"
+    (label :class "widget-clock" :text "${time}")
+    (label :class "widget-date" :text "${datew}")
+    (label :class "widget-date" :text "uptime: ${uptime}")
+    (label :text "")
+    (label :class "widget-date" :text "${musiccheck} ${musictime}"))
+  (box :class "widget-music-control" :orientation "h" :space-evenly false :halign "center" :valign "start" :spacing 10
+    (button :onclick "mpc prev" "玲")
+    (button :onclick "mpc toggle" "")
+    (button :onclick "mpc next" "怜"))))
+
+(defwindow weather-widget
+  :monitor 0
+  :geometry (geometry   :x "5px"
+                        :y "40px"
+                        :width "1px"
+                        :height "1px"
+                        :wm-ignore false
+                        :hexpand false
+                        :vexpand false
+                        :anchor "top left")
+  (weather-widget))
+
+(defwindow monitor-widget
+  :monitor 0
+   :geometry (geometry  :x "-5px"
+                        :y "40px"
+                        :width "200px"
+                        :height "300px"
+                        :wm-ignore false
+                        :hexpand false
+                        :vexpand false
+                        :anchor "top right")
+  (monitor-widget))
+
+(defwindow lockscreen
+  :monitor 0
+   :geometry (geometry  :width "100%"
+                        :height "100%"
+                        :wm-ignore false
+                        :hexpand false
+                        :vexpand false)
+  (lockscreen))
+
+(defwidget monitor-widget []
+(box :orientation "v" :space-evenly false :halign "center" :valign "start"
+  (box :orientation "h" :halign "center" :space-evenly false :spacing 10
+    (circular-progress :class "widget-monitor-circle" :value "${round(EWW_CPU.avg, 0)}" :thickness 48 :height 64 :width 64)
+    (circular-progress :class "widget-monitor-circle" :value "${round(EWW_RAM.used_mem_perc, 0)}" :thickness 48 :height 64 :width 64))
+   (box :class "widget-monitor-text" :orientation "h" :halign "center" :space-evenly false :spacing 76
+    (label :text "CPU")
+    (label :text "RAM"))
+   (box :class "widget-monitor-text-tasks" :orientation "h" :halign "start" :space-evenly false :spacing 76 
+    (label :text "${tasks}"))))
+
+    
+(defwidget weather-widget []
+  (box :orientation "h" :space-evenly false
+    (box :class "widget-close" :orientation "v" :space-evenly false :halign "center" :valign "start"
+     (label :text "")
+     (label :text "")
+     (label :text ""))
+    (box :orientation "v" :space-evenly false 
+      (label :halign "center" :valign "start" :class "widget-weatherinfo" :text "${weatherinfo}")
+      (label :halign "start" :valign "end" :class "widget-weathercity" :text "Insert City Name"))))
+      
+(defpoll music :interval "1s"
+  "mpc current")
+
+(defpoll musictime :interval "1s"
+  "scripts/mpdtime")
+
+(defpoll musiccheck :interval "1s"
+  "scripts/mpdsymbol")
+
+(defpoll uptime :interval "1s"
+  "scripts/uptime")
+
+(defpoll weatherinfo :interval "10s"
+  "scripts/getweatherinfo")
+
+(defpoll weather :interval "1s"
+  "scripts/gettemp")
+
+(defpoll volume :interval "1s"
+  "scripts/getvol")
+
+(defpoll time :interval "1s"
+  "scripts/gettime")
+
+(defpoll tasks :interval "1s"
+  "scripts/tasks")
+
+(defpoll times :interval "1s"
+  "date +'%H:%M:%S'")
+
+(defpoll datew :interval "1s"
+  "date +'%d-%m-%Y'")
+
+(defpoll ramusage :interval "1s"
+  "scripts/getram")
+
+(defpoll ramusageperc :interval "1s"
+  "scripts/getramperc")
+
+(defpoll musicname :interval "1s" 
+  "playerctl metadata --player=mpd --format '{{ title }}'")
+
+(defwindow close-bg
+  :monitor 0
+  :geometry (geometry    :width "100%"
+                         :height "100%"
+                         :wm-ignore false
+                         :hexpand false
+                         :vexpand false
+                         :anchor "top left")
+  (close-bg))
+
+(defwidget close-bg []
+  (eventbox :onclick "eww close widget powermenu weather-widget close-bg monitor-widget"
+    (label :text "")))
+
+(defwindow bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "101%"
+                      :height "37px"
+                      :wm-ignore false
+                      :stacking "bg"
+                      :hexpand false
+                      :vexpand false
+                      :anchor "top center")
+  :reserve (struts :side "top" :distance "4%")
+  (bar))
