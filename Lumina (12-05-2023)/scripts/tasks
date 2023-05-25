@@ -1,0 +1,2 @@
+#!/bin/sh
+ps aux --sort=-rss | awk 'NR>1 && NR<=9 {split($11, a, "/"); printf "%s %sMB\n", a[length(a)], $6/1024}'
