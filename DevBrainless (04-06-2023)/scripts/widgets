@@ -1,0 +1,63 @@
+#!/bin/sh
+
+music() {
+LOCK_FILE_SONG="$HOME/.cache/eww-song.lock"
+EWW_BIN="/usr/bin/eww"
+
+run() {
+    ${EWW_BIN} open music-widget 
+}
+
+# Open widgets
+if [[ ! -f "$LOCK_FILE_SONG" ]]; then
+    touch "$LOCK_FILE_SONG"
+    run && echo "ok good!"
+else
+    ${EWW_BIN} close music-widget
+    rm "$LOCK_FILE_SONG" && echo "closed"
+fi
+}
+
+power() {
+LOCK_FILE_POWER="$HOME/.cache/eww-power.lock"
+EWW_BIN="/usr/bin/eww"
+
+run() {
+    ${EWW_BIN} open power-widget 
+}
+
+# Open widgets
+if [[ ! -f "$LOCK_FILE_POWER" ]]; then
+    touch "$LOCK_FILE_POWER"
+    run && echo "ok good!"
+else
+    ${EWW_BIN} close power-widget
+    rm "$LOCK_FILE_POWER" && echo "closed"
+fi
+}
+
+dashboard() {
+LOCK_FILE_DASH="$HOME/.cache/eww-dashboard.lock"
+EWW_BIN="/usr/bin/eww"
+
+run() {
+    ${EWW_BIN} open dashboard-widget 
+}
+
+# Open widgets
+if [[ ! -f "$LOCK_FILE_DASH" ]]; then
+    touch "$LOCK_FILE_DASH"
+    run && echo "ok good!"
+else
+    ${EWW_BIN} close dashboard-widget
+    rm "$LOCK_FILE_DASH" && echo "closed"
+fi
+}
+
+if [ "$1" = "music" ]; then
+music
+elif [ "$1" = "power"  ]; then
+power
+elif [ "$1" = "dashboard" ]; then
+dashboard
+fi

@@ -1,0 +1,160 @@
+(defwidget bar []
+  (centerbox :orientation "h"
+    (workspaces)
+    (music)
+    (sidestuff)))
+
+(defwidget sidestuff []
+  (box :class "sidestuff" :vexpand "false" :hexpand "false" :orientation "h" :spacing 10 :space-evenly false :halign "end"
+    (box :tooltip {volume + "%"}
+    (metric :label "󰕾"
+            :value volume
+            :onchange "pulsemixer --set-volume {}"))
+    (box :tooltip {CPU_USAGE + "%"}
+    (metric :label "󰍛"
+            :value CPU_USAGE
+            :onchange ""))
+    (box :tooltip {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0) + "%"}
+    (metric :label "󰋊"
+            :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
+            :onchange ""))
+    time
+    (button :onclick "~/.config/eww/scripts/widgets power" "")))
+
+(defwidget workspaces []
+     (literal :content ws))
+
+(defwidget sep []
+  (box :class "module-2" :vexpand "false" :hexpand "false"
+    (label :class "separ" :text "")))
+
+(defwidget music []
+  (box :class "music"
+       :orientation "h"
+       :space-evenly false
+       :vexpand "false"
+       :hexpand "false"
+       :halign "center"
+    (box :class "cover_art" :style "background-image: url('${ART}');")
+    (button :onclick "~/.config/eww/scripts/widgets music" {music != "" ? "${music}" : ""})))
+
+
+(defwidget metric [label value onchange]
+  (box :orientation "h"
+       :class "metric"
+       :vexpand "false"
+       :hexpand "false"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 101
+           :active {onchange != ""}
+           :value value
+           :onchange onchange)))
+
+
+
+(deflisten music :initial ""
+  "playerctl --player=spotify --follow metadata --format '{{ artist }} - {{ title }}' || true")
+
+(defpoll volume :interval "1s"
+  "scripts/getvol")
+
+(defpoll time :interval "10s"
+  "date '+%H:%M'")
+
+(defpoll time-dash :interval "1s"
+  "date '+%H:%M:%S'")
+(defpoll month-dash :interval "1m"
+  "date '+%x'")
+
+(defpoll CPU_USAGE :interval "1s" `~/.config/eww/scripts/cpuinfo cpu`)
+(defpoll ART :interval "2s" `ffmpeg -i "$(playerctl --player=spotify metadata | grep "artUrl" | awk '{print $3}')" test.png -y &> /dev/null | echo test.png`)
+(defpoll ws :interval "1s" "~/.config/eww/scripts/workspaces")
+
+(defwindow bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "99%"
+                      :height "32px"
+                      :anchor "top center")
+  :reserve (struts :side "top" :distance "4%")
+  (bar))
+
+(defwindow music-widget
+  :monitor 0
+  :windowtype "desktop"
+  :geometry (geometry :x "0%"
+                      :y "5%"
+                      :width "300px"
+                      :height "250px"
+                      :anchor "top center")
+  (music-widget))
+
+(defwidget music-widget []
+  (box :orientation "h" :vexpand "false" :hexpand "false"
+    (box :class "music_art" :style "background-image: url('${ART}');")
+    (box :orientation "v"
+    (label :wrap "true" :text {music != "" ? "${music}" : ""})
+    (box :orientation "h"
+      (button :onclick "playerctl --player=spotify previous" "󰙤")
+      (button :onclick "playerctl --player=spotify play-pause" "")
+      (button :onclick "playerctl --player=spotify next" "󰙢")))
+))
+
+(defwindow power-widget
+  :monitor 0
+  :windowtype "desktop"
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "500px"
+                      :height "200px"
+                      :anchor "center")
+  (power-widget))
+
+(defwidget power-widget []
+  (box :orientation "h"
+    (button :onclick "sudo reboot" "")
+    (button :onclick "sudo poweroff" "󰐥")
+    (button :onclick "pkill xmonad" "󰍃")
+))
+
+(defwindow dashboard-widget
+  :monitor 0
+  :windowtype "desktop"
+  :geometry (geometry :x "1%"
+                      :y "0%"
+                      :width "400px"
+                      :height "800px"
+                      :anchor "left center")
+  (dashboard-widget))
+
+(defwidget dashboard-widget []
+  (box :orientation "v"
+    (box :orientation "h"
+    (box :class "avatar" :style "background-image: url('avatar.png');")
+    (clock-dashboard))
+    (box :class "music-widget-dash"
+    (music-widget))
+    (modules-dashboard)
+    (box :class "power-widget-dash"
+    (power-widget))
+))
+
+(defwidget clock-dashboard []
+  (box :orientation "v" :class "time-dashboard"
+    (label :text time-dash)
+    (label :class "month-dashboard" :text month-dash))
+  )
+
+(defwidget modules-dashboard []
+  (box :orientation "v" :class "modules-dashboard"
+    (box :orientation "h"
+    (button :tooltip "record (60fps h264_nvenc)" :onclick "ffmpeg -f x11grab -framerate 60 -i :0.0 -c:v h264_nvenc -qp 0 ${time-dash}.mp4" "󰻃")
+    (button :tooltip "stop recording" :onclick "killall ffmpeg" "󰙧"))
+    (box :orientation "h"
+    (button "todo")
+    (button "todo"))
+    ))
