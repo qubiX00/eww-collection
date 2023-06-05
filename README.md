@@ -1,5 +1,5 @@
 # eww Collection
-Collection of my eww configs
+Collection of eww configs
 
 # Screenshots
 ## Lumina by me
