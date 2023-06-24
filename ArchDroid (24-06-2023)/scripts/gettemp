@@ -1,0 +1,15 @@
+#!/bin/sh
+API_KEY="here_goes_your_api_key"
+CITY="here_goes_city_name"
+CURRENT_WEATHER=$(curl -s "https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric")
+TEMP=$(echo "$CURRENT_WEATHER" | jq -r '.main.temp')
+if [[ "$TEMP" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+  # Round the temperature to the nearest integer
+  TEMP=$(printf "%.0f" "$TEMP")
+
+  # Print the temperature to the console
+  echo "${TEMP}°C"
+else
+  # Handle the case where the temperature value is non-numeric
+  echo "Error: Unable to retrieve temperature data."
+fi

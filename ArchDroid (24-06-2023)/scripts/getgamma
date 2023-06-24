@@ -1,0 +1,4 @@
+#!/bin/sh
+gamma=$(xgamma 2>&1 | grep "Red" | awk '{ print $NF }')
+gamma=$(echo "$gamma" | tr -dc '0-9.')
+echo "$gamma"

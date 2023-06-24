@@ -1,0 +1,19 @@
+#!/bin/bash
+
+counter_file="actions_counter"  # File to store the run counter
+
+# Check if the counter file exists
+if [ ! -f "$counter_file" ]; then
+    counter=1  # First run
+    echo "$counter" > "$counter_file"
+    eww open actions
+else
+    counter=$(cat "$counter_file")
+    if ((counter % 2 == 0)); then
+        eww close actions
+    else
+        eww open actions
+    fi
+    echo $((counter + 1)) > "$counter_file"
+fi
+

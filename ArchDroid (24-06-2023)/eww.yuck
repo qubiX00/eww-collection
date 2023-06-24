@@ -1,0 +1,382 @@
+(defwidget bar []
+  (box :orientation "h" :space-evenly true 
+    (box :halign "start" :space-evenly false
+      (taskerbar)
+      (weather))
+    (box :halign "center" :space-evenly false
+      (launcher)
+      (quickapps))
+    (box :halign "end" :space-evenly false
+      (qsbar)
+      (clocky))))
+
+  (defwidget cpu []
+  (eventbox :onclick "eww open-many close-bg monitor-widget"
+    (box :class "cpuusage" :orientation "h" :space-evenly false :halign "end"
+      (label :text "${round(EWW_CPU.avg, 0)}%")
+  )))
+
+  (defwidget ram []
+  (eventbox :onclick "eww open-many close-bg monitor-widget"
+    (box :class "ramusage" :orientation "h" :space-evenly false :halign "end"
+      (label :text "${ramusage} MB")
+  )))
+
+  (defwidget powerbar []
+    (box :class "powerbar" :orientation "h" :space-evenly false :halign "end"
+    (button :onclick "eww open-many close-bg powermenu" "襤")
+  ))
+
+  (defwidget weather []
+  (eventbox :onclick "eww open-many close-bg weather-widget"
+    (box :class "weather" :orientation "h" :space-evenly false :halign "start"
+      (label :text "${weather}")
+  )))
+
+  (defwidget clocky []
+    (eventbox :onclick "scripts/togglecalendar"
+      (box :class "clocky" :orientation "h" :space-evenly false :halign "end"
+         (label :class "clocky" :text "${datew}")
+         (label :class "clocky" :text "${time}"))))
+
+  (defwidget taskerbar []
+    (eventbox :onclick "scripts/toggletasker"
+    (box :class "weather" :orientation "h" :space-evenly false :halign "start"
+      (label :text "   ${taskercount}"))))
+
+  (defwidget qsbar []
+    (eventbox :onclick "scripts/toggleactions"
+      (box :class "qsbar" :orientation "h" :space-evenly false :halign "end" :spacing 10
+         (label :text "")
+         (label :text "")
+         (label :text "")
+         (label :text "")
+  )))
+
+  (defwidget quickapps []
+      (box :class "quickapps" :orientation "h" :space-evenly false :halign "end" :spacing 5
+        (eventbox :onclick "firefox &" :class "quickappsh" 
+         (image :path "images/firefox.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "discord &" :class "quickappsh"
+         (image :path "images/discord.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "env LUTRIS_SKIP_INIT=1 lutris lutris:rungameid/1 &" :class "quickappsh"
+         (image :path "images/osu.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "thunar &" :class "quickappsh"
+         (image :path "images/files.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "lunarclient &" :class "quickappsh"
+         (image :path "images/lunar.png" :image-width 18 :image-height 18))))
+
+  (defwidget workspaces []
+    (box :class "workspaces"
+         :orientation "h"
+         :space-evenly true
+         :halign "start"
+         :spacing 4
+      (button :onclick "wmctrl -s 0" 1)
+      (button :onclick "wmctrl -s 1" 2)
+      (button :onclick "wmctrl -s 2" 3)
+      (button :onclick "wmctrl -s 3" 4)
+      (button :onclick "wmctrl -s 4" 5)
+      (button :onclick "wmctrl -s 5" 6)
+      (button :onclick "wmctrl -s 6" 7)
+      (button :onclick "wmctrl -s 7" 8)
+      (button :onclick "wmctrl -s 8" 9)
+      (button :onclick "wmctrl -s 9" 10)))
+
+  (defwidget launcher [] 
+    (box :class "launcher" :orientation "h" :halign "center"
+      (button :onclick "eww open-many close-bg widget" "⏺")
+  ))
+
+(defwidget music []
+  (box :class "music"
+       :orientation "h"
+       :space-evenly false
+       :halign "center"
+       :spacing 5
+       (button :onclick "mpc prev" "玲")
+       (button :onclick "mpc toggle" "")
+       (button :onclick "mpc next" "怜")))
+
+(defwindow taskerw
+  :monitor 0
+  :geometry (geometry   :x "10px"
+                        :y "-47px"
+                        :width "1px"
+                        :height "1px"
+                        :hexpand false
+                        :vexpand false
+                        :anchor "bottom left")
+
+  (taskerw))
+
+(defwidget taskerw []
+  (box :class "actions" :orientation "v" :space-evenly false :spacing 0
+  (selection)
+  (tasksw))
+)
+
+(defwidget selection []
+  (box :space-evenly false :orientation "h" :class "qstext" :spacing 16 :halign "center"
+  (button :onclick "eww open taskermake" "")
+  (button :onclick "eww open taskerfinish" "")
+  (button :onclick "eww open taskerdelete" "")
+))
+
+
+(defwidget tasksw []
+  (box :space-evenly false :orientation "h" :class "taskertext"
+  (label :text "${taskerlistall}")
+))
+
+(defwindow taskermake
+  :monitor 0
+  :geometry (geometry   :width "1px"
+                        :height "1px"
+                        :anchor "center"
+                        :hexpand false
+                        :vexpand false)
+
+  (taskermake))
+
+(defwindow taskerfinish
+  :monitor 0
+  :geometry (geometry   :width "1px"
+                        :height "1px"
+                        :anchor "center"
+                        :hexpand false
+                        :vexpand false)
+
+  (taskerfinish))
+
+(defwindow taskerdelete
+  :monitor 0
+  :geometry (geometry   :width "1px"
+                        :height "1px"
+                        :anchor "center"
+                        :hexpand false
+                        :vexpand false)
+
+  (taskerdelete))
+
+(defwidget taskermake []
+  (box :space-evenly false :class "qsxd" :spacing 0 :orientation "v" :halign "center" :valign "center"
+    (label :class "taskertext" :text "Enter Task ID, name and due time")
+    (input :class "qstext" :onaccept "scripts/tasker --make {} && eww close taskermake")))
+
+(defwidget taskerfinish []
+  (box :space-evenly false :class "qsxd" :spacing 0 :orientation "v" :halign "center" :valign "center"
+    (label :class "taskertext" :text "Enter ID of a task you would like to mark as finished")
+    (input :class "qstext" :onaccept "scripts/tasker --finish {} && eww close taskerfinish")))
+
+(defwidget taskerdelete []
+  (box :space-evenly false :class "qsxd" :spacing 0 :orientation "v" :halign "center" :valign "center"
+    (label :class "taskertext" :text "Enter ID of a task you would like to delete")
+    (input :class "qstext" :onaccept "scripts/tasker --delete {} && eww close taskerdelete")))
+
+(defwindow calendarw
+  :monitor 0
+  :geometry (geometry   :x "-10px"
+                        :y "-47px"
+                        :width "1px"
+                        :height "1px"
+                        :hexpand false
+                        :vexpand false
+                        :anchor "bottom right")
+
+  (calendarw))
+
+(defwidget calendarw []
+  (box :space-evenly false :class "qsxd"
+  (calendar :style "padding: 2;")))
+
+(defwindow actions
+  :monitor 0
+  :geometry (geometry   :x "-10px"
+                        :y "-47px"
+                        :width "1px"
+                        :height "1px"
+                        :hexpand false
+                        :vexpand false
+                        :anchor "bottom right")
+
+  (actions))
+
+(defwidget actions []
+  (box :space-evenly false
+  (box :class "actions" :orientation "v" :space-evenly false :spacing 0
+  (bgqs)
+  (start)
+  (box :orientation "h" :space-evenly false :spacing 0
+  (musicctl)
+  (musictime))
+  (box :orientation "h" :space-evenly false :spacing 0
+  (nightlight))
+  (sliders))))
+
+(defwidget start []
+  (box :space-evenly false :orientation "h"
+    (box :orientation "h" :space-evenly false :halign "start" :valign "start"
+      (label :class "qstext" :text "${datew}"))
+  (box :orientation "h" :space-evenly false :halign "end" :valign "start"
+    (eventbox :onclick "systemctl poweroff" (label :class "qsbuttonpower" :tooltip "Power Off" :text ""))
+    (eventbox :onclick "systemctl reboot" (label :class "qsbuttonpower" :tooltip "Reboot" :text ""))
+    (eventbox :onclick "bspc quit" (label :class "qsbuttonpower" :tooltip "Log Out" :text "")))))
+
+(defwidget sliders []
+  (box :orientation "v" :space-evenly false
+  (metric :class "qsicons" :label " " :value volume :onchange "amixer -D pulse sset Master {}%")
+  (gamma-metric :class "qsicons" :label " " :value getgamma :onchange "xgamma -gamma {}")
+  (label :halign "end" :class "kern" :text "${kernel}")
+))
+
+(defwidget musicctl []
+  (box :space-evenly false
+  (box :orientation "v" :space-evenly false
+  (label :class "qstext" :text "${musiccheck} ${musictime}")
+  (box :orientation "h" :space-evenly false 
+  (eventbox :onclick "mpc prev" (label :class "qsmusic" :text "玲"))
+  (eventbox :onclick "mpc toggle" (label :class "qsmusic" :text ""))
+  (eventbox :onclick "mpc next" (label :class "qsmusic" :text "怜"))
+))))
+
+(defwidget musictime []
+  (box :space-evenly false
+  (box :class "qscircle" :space-evenly false :orientation "h"
+    (circular-progress :class "widget-monitor-circle" :value "${getmpdlengthperc}" :thickness 5 :height 45 :width 45)
+    (box :class "metricv" :space-evenly false :orientation "v"
+    (scale :orientation "v" :min 0 :max 101 :active {"mpc volume {}" != ""} :value getmpdvol :onchange "mpc volume {}"))
+)))
+
+(defwidget bgqs []
+  (box :space-evenly false :orientation "v"
+  (box :class "bgqs" :style "background-image: url('scripts/test.png');")
+))
+
+(defwidget nightlight []
+  (box :space-evenly false :class "qstext"
+    (box :space-evenly false :halign "start" :class "night-light"
+    (eventbox :onclick "xgamma -rgamma 1 && xgamma -ggamma 0.88 && xgamma -bgamma 0.76" (label :class "qstext" :text ""))
+    (box :space-evenly false :halign "end" :class "night-light"
+    (eventbox :onclick "xgamma -gamma 1" (label :class "qstext" :text ""))
+))))
+
+(defpoll music :interval "1s"
+  "mpc current")
+
+(defpoll musictime :interval "1s"
+  "scripts/mpdtime")
+
+(defpoll musiccheck :interval "1s"
+  "scripts/mpdsymbol")
+
+(defpoll uptime :interval "1s"
+  "scripts/uptime")
+
+(defpoll weatherinfo :interval "10s"
+  "scripts/getweatherinfo")
+
+(defpoll weather :interval "1s"
+  "scripts/gettemp")
+
+(defpoll volume :interval "1s"
+  "scripts/getvol")
+
+(defpoll time :interval "1s"
+  "scripts/gettime")
+
+(defpoll kernel :interval "300s"
+  "uname -r")
+
+(defpoll tasks :interval "1s"
+  "scripts/tasks")
+
+(defpoll times :interval "1s"
+  "date +'%H:%M:%S'")
+
+(defpoll datew :interval "1s"
+  "date +'%d-%m-%Y'")
+
+(defpoll ramusage :interval "1s"
+  "scripts/getram")
+
+(defpoll ramusageperc :interval "1s"
+  "scripts/getramperc")
+
+(defpoll getgamma :interval "1s"
+  "scripts/getgamma")
+
+(defpoll musicname :interval "1s" 
+  "playerctl metadata --player=mpd --format '{{ title }}'")
+
+(defpoll visualizer :interval "1s"
+  "scripts/visualizer")
+
+(defpoll getmpdlengthperc :interval "1s"
+  "scripts/getmpdlengthperc")
+
+(defpoll getmpdvol :interval "1s"
+  "scripts/getmpdvol")
+
+(defpoll taskercount :interval "1s"
+  "scripts/tasker --count")
+
+(defpoll taskerlistall :interval "1s"
+  "scripts/tasker --listall")
+
+(defpoll youtube :interval "1s"
+  `ffmpeg -i "$(playerctl --player=spotify metadata | grep "artUrl" | awk '{print $3}')" test.png -y &> /dev/null | echo test.png`)
+
+(defwidget metric [label value onchange]
+  (box :class "qstext"
+  (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 101
+           :active {onchange != ""}
+           :value value
+           :onchange onchange))))
+
+(defwidget gamma-metric [label value onchange]
+  (box :class "qstext"
+  (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 10
+           :active {onchange != ""}
+           :value value
+           :onchange onchange))))
+
+
+(defwindow close-bg
+  :monitor 0
+  :geometry (geometry    :width "100%"
+                         :height "100%"
+                         :wm-ignore false
+                         :hexpand false
+                         :vexpand false
+                         :anchor "top left")
+  (close-bg))
+
+(defwidget close-bg []
+  (eventbox :onclick "eww close widget powermenu weather-widget close-bg monitor-widget"
+    (label :text "")))
+
+(defwindow bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :height "37px"
+                      :wm-ignore false
+                      :stacking "bg"
+                      :hexpand false
+                      :vexpand false
+                      :anchor "bottom center")
+  :reserve (struts :side "bottom" :distance "4%")
+  (bar))

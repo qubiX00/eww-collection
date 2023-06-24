@@ -1,0 +1,2 @@
+#!/bin/sh
+mpc volume | awk '{ print $2 }' | sed 's/%//'

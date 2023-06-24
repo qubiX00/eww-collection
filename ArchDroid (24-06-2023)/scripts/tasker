@@ -1,0 +1,107 @@
+#!/bin/sh
+
+config_file="$HOME/.config/tasker.ini"
+
+initialize_config() {
+    if [[ ! -s "$config_file" ]]; then
+        cat <<EOF >"$config_file"
+# Tasker Configuration
+
+[General]
+# Add your configuration options here
+EOF
+    fi
+
+    if ! grep -q "\[Tasks\]" "$config_file"; then
+        cat <<EOF >>"$config_file"
+
+[Tasks]
+# Example tasks
+# 1 - go to bakery, buy some bread - 09-06-2023 15:00
+# 2 - Example Task 2 - 10-06-2023 12:00
+EOF
+    fi
+}
+
+list_all_tasks() {
+    if grep -q "\[Tasks\]" "$config_file"; then
+        awk -F ' - ' '/\[Tasks\]/{flag=1;next} flag && NF {gsub(/^[[:space:]]+/, "", $0); print $0}' "$config_file"
+    else
+        echo "No tasks available!"
+    fi
+}
+
+count_tasks() {
+    local task_count
+    if grep -q "\[Tasks\]" "$config_file"; then
+        task_count=$(awk -F ' - ' '/\[Tasks\]/{flag=1;next} flag && NF {count++} END {print count}' "$config_file")
+    else
+        task_count=0
+    fi
+    echo "${task_count:-0}"
+}
+
+
+make_task() {
+    local id="$1"
+    local info="$2"
+    local due="$3"
+
+    if [[ -z "$id" ]]; then
+        id=$(awk -F ' - ' '/\[Tasks\]/{flag=1;next} flag && NF {max=$1} END {print max+1}' "$config_file")
+    fi
+
+    echo "$id - $info" >>"$config_file"
+    echo "Make> Task $id created."
+}
+
+finish_task() {
+    local id="$1"
+    sed -i "/^$id\s*-/ s/$/ ✓/" "$config_file"
+}
+
+delete_task() {
+    local id="$1"
+    sed -i "/^$id\s*-/d" "$config_file"
+    echo "Delete> Task $id deleted."
+}
+
+initialize_config
+
+case "$1" in
+    --listall)
+        list_all_tasks
+        ;;
+    --count)
+        count_tasks
+        ;;
+    --make)
+        id="$2"
+        if [[ ! "$id" =~ ^[0-9]+$ ]]; then
+            echo "Error> Invalid ID. Please provide a numeric ID."
+            exit 1
+        fi
+        info="${*:3}"
+        make_task "$id" "$info" "$4"
+        ;;
+    --finish)
+        id="$2"
+        if [[ ! "$id" =~ ^[0-9]+$ ]]; then
+            echo "Error> Invalid ID. Please provide a numeric ID."
+            exit 1
+        fi
+        finish_task "$id"
+        ;;
+    --delete)
+        id="$2"
+        if [[ ! "$id" =~ ^[0-9]+$ ]]; then
+            echo "Error> Invalid ID. Please provide a numeric ID."
+            exit 1
+        fi
+        delete_task "$id"
+        ;;
+    *)
+        echo "Invalid command. Usage: tasker [--listall|--count|--make <id> <info> <due date (DD-MM-YYYY/HH:mm)>|--finish <id>|--delete <id>]"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,6 @@
+#!/bin/sh
+current=$(sh ~/.config/eww/scripts/getmpdcurrent)
+duration=$(sh ~/.config/eww/scripts/getmpdlength)
+
+echo "$current $duration" | awk '{ if ($2 != 0) printf "%.1f", ($1+0)/($2+0)*100 }'
+

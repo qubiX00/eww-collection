@@ -1,0 +1,3 @@
+#!/bin/sh
+lenght=$(playerctl metadata --player=mpd --format "{{ mpris:length }}")
+echo $((lenght/1000000))
