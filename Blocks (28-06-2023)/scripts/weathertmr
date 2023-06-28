@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Replace 'YOUR_API_KEY' with your OpenWeatherMap API key
+API_KEY="here_goes_your_api_key"
+CITY="here_goes_city_name"
+URL="http://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}"
+OUTPUT=$(curl -s $URL)
+
+ICON=$(echo $OUTPUT | jq -r ".weather[0].main")
+
+  case "$ICON" in
+    "Clear")
+      ICON="☀️"
+      ;;
+    "Clouds")
+      ICON="☁️"
+      ;;
+    "Rain")
+      ICON="🌧️"
+      ;;
+    "Thunderstorm")
+      ICON="⛈️"
+      ;;
+    "Snow")
+      ICON="❄️"
+      ;;
+    "Mist" | "Fog" | "Haze")
+      ICON="🌫️"
+      ;;
+    *)
+      ICON=""
+      ;;
+  esac
+
+  echo $ICON

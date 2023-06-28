@@ -1,0 +1,169 @@
+(defwidget bar []
+  (box :orientation "h" :space-evenly true 
+    (box :halign "start" :space-evenly false
+      (quickapps)
+      (workspaces))
+    (box :halign "center" :space-evenly false
+      (clocky))
+    (box :halign "end" :space-evenly false
+      (volume)
+      (weather))))
+
+  (defwidget volume []
+  (eventbox :onhover "eww update vol_reveal=true"
+			  :onhoverlost "eww update vol_reveal=false"
+  (box :class "volumeslider" :space-evenly "false" :orientation "h" :spacing "3" 
+	(button   :tooltip "${volume}%"   :class "volume_icon" "")
+	(revealer :transition "slideleft"
+			  :reveal vol_reveal
+			  :duration "350ms"
+        :tooltip "${volume}%"
+    (metric :class "volumeslider" :label "" :value volume :onchange "amixer -D pulse sset Master {}%")))))
+  (defvar vol_reveal false)
+
+  (defwidget weather []
+  (eventbox :onclick "scripts/toggleweather"
+    (box :class "weather" :orientation "h" :space-evenly false :halign "start" :spacing 4
+      (label :text "${temperature}")
+  )))
+
+  (defwidget clocky []
+    (eventbox :onclick "scripts/togglecalendar"
+      (box :class "clocky" :orientation "h" :space-evenly false :halign "end"
+         (label :text "${time}"))))
+
+  (defwidget quickapps []
+      (box :class "quickapps" :orientation "h" :space-evenly false :halign "end" :spacing 5
+        (eventbox :onclick "firefox &" :class "quickappsh" 
+         (image :path "images/firefox.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "discord &" :class "quickappsh"
+         (image :path "images/discord.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "env LUTRIS_SKIP_INIT=1 lutris lutris:rungameid/1 &" :class "quickappsh"
+         (image :path "images/osu.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "thunar &" :class "quickappsh"
+         (image :path "images/files.png" :image-width 18 :image-height 18))
+        (eventbox :onclick "lunarclient &" :class "quickappsh"
+         (image :path "images/lunar.png" :image-width 18 :image-height 18))))
+
+  (defwidget workspaces []
+    (box :class "workspaces"
+         :orientation "h"
+         :space-evenly true
+         :halign "start"
+         :spacing 4
+      (button :onclick "wmctrl -s 0" 1)
+      (button :onclick "wmctrl -s 1" 2)
+      (button :onclick "wmctrl -s 2" 3)
+      (button :onclick "wmctrl -s 3" 4)
+      (button :onclick "wmctrl -s 4" 5)
+      (button :onclick "wmctrl -s 5" 6)
+      (button :onclick "wmctrl -s 6" 7)
+      (button :onclick "wmctrl -s 7" 8)
+      (button :onclick "wmctrl -s 8" 9)
+      (button :onclick "wmctrl -s 9" 10)))
+
+(defwindow weatherforecast
+  :monitor 0
+  :geometry (geometry :x "-20px"
+                      :y "-50px"
+                      :width "1px"
+                      :height "1px"
+                      :wm-ignore false
+                      :hexpand false
+                      :vexpand false
+                      :anchor "bottom right")
+  (weatherforecasta))
+
+(defwidget weatherforecasta []
+  (box :space-evenly false :orientation "v"
+  (weatherforecast)
+  ;(weathersun)
+  ))
+
+(defwidget weatherforecast []
+  (box :space-evenly false :orientation "h"
+  (box :class "weatherforecast" :orientation "h" :space-evenly false :spacing 5
+  (weathericon)
+  (weathertoday)
+)))
+
+(defwidget weathertoday []
+  (box :class "weatherforecast-days" :space-evenly false :spacing 5
+  (label :text "${weathertoday}")
+))
+
+(defwidget weathericon []
+  (box :class "weatherforecast-icon" :space-evenly false :spacing 5
+  (label :text "${weathericon}")
+))
+
+(defvar eww "eww") ; for testing 
+
+(defpoll weathertoday :interval "1s"
+  "scripts/getweatherinfo")
+
+(defpoll weathericon :interval "300s"
+  "scripts/weathertmr")  
+
+(defpoll temperature :interval "1s"
+  "scripts/gettemp")
+
+(defpoll volume :interval "1s"
+  "scripts/getvol")
+
+(defpoll time :interval "1s"
+  "scripts/gettime")
+
+(defwidget metric [label value onchange]
+  (box :class "metric"
+  (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 101
+           :active {onchange != ""}
+           :value value
+           :onchange onchange))))
+
+(defwidget gamma-metric [label value onchange]
+  (box :class "qstext"
+  (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 10
+           :active {onchange != ""}
+           :value value
+           :onchange onchange))))
+
+
+(defwindow close-bg
+  :monitor 0
+  :geometry (geometry    :width "100%"
+                         :height "100%"
+                         :wm-ignore false
+                         :hexpand false
+                         :vexpand false
+                         :anchor "top left")
+  (close-bg))
+
+(defwidget close-bg []
+  (eventbox :onclick "eww close widget powermenu weather-widget close-bg monitor-widget"
+    (label :text "")))
+
+(defwindow bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :x "0%"
+                      :y "-4px"
+                      :width "95%"
+                      :height "34px"
+                      :wm-ignore false
+                      :stacking "bg"
+                      :hexpand false
+                      :vexpand false
+                      :anchor "bottom center")
+  :reserve (struts :side "bottom" :distance "2%")
+  (bar))

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Set your OpenWeatherMap API key and city name
+API_KEY="here_goes_your_api_key"
+CITY="here_goes_city_name"
+
+# Send the HTTP request to the OpenWeatherMap API and receive the weather data in JSON format
+WEATHER_DATA=$(curl -s "https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric")
+FORECAST_DATA=$(curl -s "https://api.openweathermap.org/data/2.5/forecast?q=${CITY}&appid=${API_KEY}&units=metric")
+
+# Extract the relevant weather information from the current weather data using the jq command
+TEMP=$(echo "$WEATHER_DATA" | jq -r '.main.temp')
+PRESSURE=$(echo "$WEATHER_DATA" | jq -r '.main.pressure')
+WIND_SPEED=$(echo "$WEATHER_DATA" | jq -r '.wind.speed')
+
+# Print the current weather information to the console
+echo "${TEMP}°C"
+echo "${PRESSURE} hPa"
+echo "${WIND_SPEED} m/s"
