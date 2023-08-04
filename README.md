@@ -10,3 +10,6 @@
 
 ## Blocks by me (uploaded on 28-06-2023)
 ![Blocks](https://github.com/qubiX00/eww-collection/assets/115372907/2fe3a6d3-6c06-4d1e-97e8-adcdec77e91b)
+
+## Mojave by me (uploaded on 03-08-2023)
+![2023-08-04-1691183523_screenshot_1920x1080](https://github.com/qubiX00/eww-collection/assets/115372907/a0df7f03-f3af-4535-b192-b7b2cacb7bac)
