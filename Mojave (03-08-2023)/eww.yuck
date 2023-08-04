@@ -1,0 +1,112 @@
+; bar widget
+
+(defwidget bar []
+  (box :orientation "h" :space-evenly true 
+    (box :halign "start" :space-evenly false
+      (launcher)
+      (workspaces))
+    (box :halign "end" :space-evenly false
+      (volume)
+      (systemstats)
+      (clock)
+      (power))))
+
+; bar modules
+
+(defwidget systemstats []
+  (eventbox :onhover "eww update systemstats_rev=true" :onhoverlost "eww update systemstats_rev=false"
+    (box :class "systemstats" :orientation "h" :space-evenly false
+      (revealer :transition "slideleft" :reveal systemstats_rev
+        (label :text "CPU: ${cpu}% | RAM: ${ram}% "))
+        (label :text " "))))
+(defvar systemstats_rev false)
+
+(defwidget volume []
+  (eventbox :onhover "eww update volume_rev=true" :onhoverlost "eww update volume_rev=false"
+    (box :class "systemstats" :orientation "h" :space-evenly false
+      (revealer :transition "slideleft" :reveal volume_rev
+        (box :orientation "h" :class "metric" :space-evenly false (scale :min 0 :max 101 :active {"amixer -D pulse sset Master {}%" != ""} :value volume :onchange "amixer -D pulse sset Master {}%")))
+        (label :text " "))))
+(defvar volume_rev false)
+
+(defwidget clock []
+(eventbox :onhover "eww update clock_rev=true" :onhoverlost "eww update clock_rev=false"
+  (box :class "clock" :orientation "h" :space-evenly false
+    (revealer :transition "slideleft" :reveal clock_rev
+      (box (label :text "${date}  ")))
+      (label :text "${time}"))))
+(defvar clock_rev false)
+
+(defwidget launcher []
+  (box :class "launcher" :orientation "h" :space-evenly false
+    (button :onclick "rofi -show drun &" " ")
+))
+
+(defwidget power []
+  (box :class "power" :orientation "h" :space-evenly false
+    (button :onclick "eww open powermenu" "")))
+
+(defwidget workspaces []
+  (literal :content workspaces))
+
+; power menu
+
+(defwidget powermenu []
+  (box :orientation "h" :space-evenly false :class "powermenu" :halign "center" :valign "center"
+    (button :class "powerbutton" :onclick "eww close powermenu" "")
+    (button :class "powerbutton" :onclick "bspc quit" " ")
+    (button :class "powerbutton" :onclick "systemctl poweroff" " ")
+    (button :class "powerbutton" :onclick "systemctl reboot" " ")))
+
+; variables
+
+(deflisten workspaces "./scripts/workspaces")
+
+(defpoll cpu :interval "1s" "scripts/systeminfo --cpu")
+
+(defpoll ram :interval "1s" "scripts/systeminfo --mem")
+
+(deflisten music :initial ""
+  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
+
+(defpoll volume :interval "1s"
+  "scripts/getvol")
+
+(defpoll time :interval "1s"
+  "date '+%H:%M'")
+
+(defpoll date :interval "1s"
+  "date '+%d-%m-%Y'")
+
+; windows
+
+(defwindow bar
+  :monitor 0
+  :windowtype "desktop"
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :height "1px"
+		                  :stacking "fg"
+                      :anchor "bottom center")
+  (bar))
+
+(defwindow closebg
+  :monitor 0
+  :windowtype "dialog"
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :height "100%"
+		                  :stacking "bg"
+                      :anchor "top left")
+  (closebg))
+
+(defwindow powermenu
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :width "100%"
+                      :height "100%"
+		                  :stacking "fg"
+                      :anchor "top left")
+  (powermenu))
